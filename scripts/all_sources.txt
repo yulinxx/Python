@@ -1,0 +1,846 @@
+About
+Copy Info
+OK
+SanYi CAD
+Computer-Aided Design Software
+SanYi3D
+3D Model Viewer based on Qt and OpenGL
+Software Information
+Version:
+Build Date:
+Compiler:
+Language Standard:
+Qt Version:
+System Information
+OS:
+CPU:
+Memory:
+Screen:
+N/A
+OpenGL Information
+Vendor:
+Renderer:
+GLSL:
+Legal
+Built with Qt
+This software uses the Qt framework (LGPL v3). Qt source is available at:
+Third-party components are property of their respective owners.
+%1 (%2 cores)
+%1 GB
+%1x%2 @ %3 DPI (DPR %4)
+Version
+Build Date
+Compiler
+Language Standard
+Qt Version
+OS
+CPU
+Memory
+Screen
+Vendor
+Renderer
+GLSL
+Fill
+Parameter are invalid, please check.
+No entities found for filling.
+Offset
+Scene manager not ready.
+No entities to offset.
+Array
+No entities selected for array.
+Nesting
+Invalid sheet size, please check parameters.
+No parts could be placed. Try enlarging the sheet or reducing spacing.
+Algorithm
+Fill...
+Nesting...
+Offset...
+Array...
+Array
+Type:
+Rectangular Array
+Circular Array
+Rectangular Parameters
+Rows:
+Columns:
+Row Spacing:
+Column Spacing:
+Circular Parameters
+Count:
+Angle (deg):
+Radius:
+OK
+Cancel
+Invalid parameters
+Select Bitmap File
+File Path:
+Browse...
+OK
+Cancel
+Bitmap Files(*.png *.jpg *.jpeg *.bmp *.gif *.tiff *.tif);;All Files(*.*)
+Error
+Failed to load bitmap file: %1
+Warning
+Please select a bitmap file first.
+Failed to load the selected bitmap file.
+Camera
+Speed
+Move:
+Rotate:
+Zoom:
+Mode
+Perspective
+Orthographic
+Default
+Trackball
+Fly
+Draw
+No entities selected for array
+Array
+Array created %1 entities
+Array operation failed
+No entities to transform
+SceneEditService unavailable
+No entity selected
+Bounding box: (%1, %2) - (%3, %4)
+Generated %1 entities
+Test entities added
+Edit
+Rotate
+Mirror
+Align
+Edit
+Undo
+Redo
+Select All
+Clear Selection
+Delete
+Transform
+Translate
+Rotate
+Scale
+Properties
+Close
+Property
+Value
+Import Failed
+Supported Files
+Image Files
+DXF Files
+PLT Files
+SVG Files
+PDF Files
+AI Files
+UG Files
+All Files
+Unsaved Changes
+Do you want to save the current file?
+SanYi CAD - [Untitled][*]
+Open File
+All Supported Files (*.sy *.dxf *.plt *.prt *.svg *.pdf *.ai);;SanYi Files (*.sy);;DXF Files (*.dxf);;PLT Files (*.plt);;UG Files (*.prt);;SVG Files (*.svg);;PDF Files (*.pdf);;AI Files (*.ai);;All Files (*.*)
+Error
+File not found: %1
+Unsupported file format: %1
+Warnings:
+
+Import Warnings
+SanYi CAD - [%1][*]
+Failed to open file: %1
+%2
+Save As
+SanYi Files (*.sy);;DXF Files (*.dxf);;SVG Files (*.svg);;All Files (*.*)
+Export File
+Info
+Image export not yet implemented
+Import File
+No entities to export
+Directory does not exist
+SanYi Files (*.sy)
+DXF Files (*.dxf)
+SVG Files (*.svg)
+PLT Files (*.plt)
+UG Files (*.prt)
+BMP Files (*.bmp)
+PNG Files (*.png)
+All Files (*.*)
+DXF Files (*.dxf);;All Files (*.*)
+SVG Files (*.svg);;All Files (*.*)
+PLT Files (*.plt);;All Files (*.*)
+UG Files (*.prt);;All Files (*.*)
+PDF Files (*.pdf);;All Files (*.*)
+Adobe Illustrator Files (*.ai);;All Files (*.*)
+All Supported Files (*.dxf *.plt *.prt *.svg *.pdf *.ai);;All Files (*.*)
+File
+New
+Open...
+Save
+Save As...
+Import
+DXF (*.dxf)
+PLT (*.plt)
+UG (*.ug)
+SVG (*.svg)
+PDF (*.pdf)
+AI (*.ai)
+Image...
+Export
+BMP (*.bmp)
+PNG (*.png)
+Recent Files
+Exit
+File
+Open Model...
+Import Model...
+New Scene
+Exit
+Import Image
+Image Files (*.png *.jpg *.jpeg *.bmp *.tga *.tiff *.tif *.gif *.webp *.ico *.ppm *.xbm *.xpm);;All Files (*.*)
+View widget is not available.
+Scene manager is not available.
+Image imported: %1 (%2x%3)
+(No recent files)
+Clear Recent Files
+Fill Parameters Settings
+Fill Parameters
+Fill spacing:
+ mm
+Fill angle:
+ °
+Fill direction:
+Left to right
+Right to left
+Bow fill
+Bidirectional fill
+Scan direction:
+Bottom to top
+Top to bottom
+Margin:
+Fill Options
+Enable cross fill
+OK
+Cancel
+Font
+UI Font Size
+Font Size:
+Set the base font size for the application UI
+Preview
+AaBbCcXxYyZz  1234567890  
+The quick brown fox jumps over the lazy dog.
+General
+mm
+cm
+m
+inch
+mil
+pixel
+Enable Log
+Trace
+Debug
+Info
+Warn
+Error
+Critical
+Off
+Display Unit:
+Language:
+Log Enabled:
+Log Level:
+Open Log Folder
+Failed to open log folder:
+
+Log Files:
+Grid
+Visible
+Show Grid:
+Major Grid Spacing:
+Major Line Width:
+Minor Line Width:
+Major:
+Minor:
+Help
+Settings...
+Keyboard Shortcuts
+Documentation
+About
+Help
+Settings...
+Keyboard Shortcuts
+Documentation
+About
+Laser
+Connect
+Disconnect
+Home
+Laser Config...
+Process Parameters...
+Start
+Start Process
+Pause Process
+Stop Process
+Material Database
+Test Fire
+Emergency Stop
+Reset Safety
+Self Check
+Layer Manager
+Layer Properties
+Name:
+Pick Color...
+Color:
+Visible
+Locked
+Entities: 0
+Contents:
+New
+Delete
+Rename
+Set Current
+%1 (ID %2, %3 entities)
+ [Current]
+Entities: %1
+Layer Color
+Draw
+Draw %1
+View
+Front
+Front view (1)
+Back
+Back view (2)
+Left
+Left view (3)
+Right
+Right view (4)
+Top
+Top view (5)
+Bottom
+Bottom view (6)
+ISO
+Isometric view (Alt+I)
+Reset
+Reset view (R)
+Fit
+Fit all (F)
+Lighting
+Ambient
+Enabled
+Intensity:
+Directional
+Shadow
+Quality:
+SanYi CAD[*]
+Ready
+Shortcut Conflicts
+Detected %1 shortcut conflict(s). See log for details.
+Layer: %1 — %2
+Keyboard Shortcuts
+Documentation
+Online documentation is not configured yet.
+Unsaved Changes
+Do you want to save the current file before exiting?
+SanYi3D - 3D Model Viewer
+Ready
+SanYi3D - %1
+Unnamed
+%1 models
+RMB=Rotate | MMB=Pan | Wheel=Zoom | 1-6=Views | Alt+I/D/T=Axonometric
+Keyboard Shortcuts
+File
+Open Model	Ctrl+O
+Import Model	Ctrl+Shift+O
+New Scene	Ctrl+N
+Edit
+Undo	Ctrl+Z
+Redo	Ctrl+Y
+Select All	Ctrl+A
+Delete	Del
+Translate	T
+Rotate	R
+Scale	S
+Clear Selection	Esc
+View
+Reset View	Ctrl+R
+Fit All	Ctrl+F
+Front/Back/Left/Right/Top/Bottom	1-6
+Isometric/Dimetric/Trimetric	Alt+I / Alt+D / Alt+T
+Switch to 2D	Ctrl+Shift+2
+Documentation
+Online documentation is not configured yet.
+Unsaved Changes
+The scene has unsaved changes. Exit anyway?
+Nesting Parameters
+Sheet
+ mm
+Sheet width:
+Sheet height:
+Margin X:
+Margin Y:
+Spacing
+Orientation
+Enable rotation
+Rotation angles:
+Enable mirror (flip X)
+Parts
+Nest selected entities only (use all if none selected)
+Quantity per part:
+Algorithm
+Iterations:
+Time limit (ms):
+Sort strategy:
+By area DESC
+By longest edge DESC
+By width DESC
+By height DESC
+OK
+Cancel
+Part-to-part spacing:
+Part-to-sheet spacing:
+Geometry tolerance:
+4 directions (0/90/180/270)
+8 directions (+45 deg steps)
+24 directions (15 deg steps)
+ ms (0 = unlimited)
+Nesting Calculation
+Initializing...
+Offset Parameters
+Offset Type:
+Outset
+Inset
+Offset:
+ mm
+Join Type:
+Round
+Square
+Miter
+Miter Limit:
+Arc Tolerance:
+Keep Original
+OK
+Cancel
+Progress
+Preparing...
+%p%
+Elapsed: 0 seconds
+Cancel
+Canceling...
+Canceled
+Completed
+Finished
+Close
+Elapsed: %1
+%1 seconds
+Confirm Cancel
+Task is in progress, are you sure you want to cancel?
+Delete
+Copy
+Cut
+Cut %1 entities
+Paste
+Select All
+Clear Selection
+Zoom In
+Zoom Out
+Zoom to Fit
+Reset View
+Layer Manager...
+Rotate 90° CW
+Rotate 90° CCW
+Rotate 180°
+Mirror
+Align Left
+Align Right
+Center Horizontally
+Align Top
+Align Bottom
+Center Vertically
+Invert Selection
+Deleted %1 entities
+Rotate
+Rotated %1 entities by %2° clockwise
+Mirror Horizontal
+Horizontal mirror: %1 entities
+Mirror Vertical
+Vertical mirror: %1 entities
+Align
+%1: %2 entities
+Copied %1 entities
+Pasted %1 entities
+Split parameter t must be in (0, 1), got %1
+No entities selected for split
+No bezier entities in selection
+Discretize produced no output
+Discretize not implemented (computed %1 lines, %2 points, result discarded)
+Move dialog opened
+Array dialog opened
+MainWindow is not available
+Algorithm adapter is not available
+Fill dialog opened
+Nesting dialog opened
+Offset dialog opened
+Move
+Split Bezier
+Split %1 bezier at t=%2
+Merge Bezier
+Import Image
+Failed to load image: %1
+Scene manager is not available.
+Select Bitmap File
+Image Files(*.png *.jpg *.jpeg *.bmp *.tga *.gif *.tiff *.tif);;All Files(*.*)
+Warning
+Scene manager is not available
+Please enter text content for QR code
+Error
+Failed to generate QR code: %1
+Please enter text content
+Laser connecting...
+Laser disconnected
+Test fire executed
+Material Database - %1 materials loaded
+Process Parameters dialog
+EMERGENCY STOP activated!
+Safety reset
+Self check passed
+Self check FAILED
+Set Current Layer
+Move to Layer...
+Settings applied and saved
+Laser: %1
+Laser connected
+Laser error: %1
+EMERGENCY STOP - System halted
+Multiple Selection
+Count
+Min
+Max
+Width
+Height
+Properties...
+Unsaved Changes
+The scene has unsaved changes. Continue anyway?
+Open 3D Model
+3D Models (*.stl *.STL *.obj *.OBJ);;All Files (*.*)
+Load Error
+Failed to load model:
+%1
+Language
+QR Code Input Settings
+Text Input
+Enter text content for QR code...
+QR Code Settings
+Size:
+ px
+Error Correction:
+Low(L)
+Medium(M)
+Quartile(Q)
+High(H)
+Options:
+Include Border
+OK
+Cancel
+Layers
+Layer: %1 (%2)
+ [Locked]
+ [Hidden]
+ [Current]
+Switch to layer %1 (%2)
+Layer color %1
+Display
+Wireframe
+Wireframe mode (W)
+Grid
+Show grid (G)
+BBox
+Show bounding box (B)
+Floor
+Show floor (F)
+Move
+Translate mode (T)
+Rotate
+Rotate mode (R)
+Scale
+Scale mode (S)
+Ruler
+Top Ruler
+Top:
+Left Ruler
+Left:
+Thickness:
+Font Size:
+Major Tick:
+Bg:
+Tick:
+Text:
+Border:
+Settings - 2D
+Settings - 3D
+Settings
+OK
+Cancel
+Restore Defaults
+Tool
+Edit
+View
+Render
+Keyboard Shortcuts
+Category:
+All
+Tool
+Edit
+View
+Render
+Action
+Category
+Shortcut
+Edit...
+Reset to Default
+Reset All
+Save
+Cancel
+Edit Shortcut
+Please select a shortcut to edit.
+Press Shortcut Key
+Press the key combination for:
+%1
+Clear
+OK
+(None)
+&apos;%1&apos; and &apos;%2&apos; share the same shortcut
+Reset All Shortcuts
+Are you sure you want to reset all shortcuts to their default values?
+Select Tool
+Point Tool
+Line Tool
+Polyline Tool
+Polygon Tool
+Circle Tool
+Arc Tool
+Ellipse Tool
+Rectangle Tool
+Triangle Tool
+Quadratic Bezier
+Cubic Bezier
+Spline Tool
+NURBS Tool
+Smart Line Tool
+Text Tool
+Bitmap Tool
+QR Code Tool
+Delete
+Copy
+Cut
+Paste
+Select All
+Undo
+Redo
+Save
+Save As
+New File
+Open File
+Zoom In
+Zoom Out
+Pan Up
+Pan Down
+Pan Left
+Pan Right
+Reset View
+Zoom to Fit
+Zoom to Selection
+Toggle Antialiasing
+Toggle Wireframe
+Toggle Depth Test
+Reset Render View
+Snap
+General
+Enable Snap
+Snap Radius:
+Ortho Mode
+Angle Snap
+Polar Angle Step:
+Snap Modes
+Endpoint
+Midpoint
+Center
+Node
+Quadrant
+Intersection
+Grid
+Perpendicular
+Tangent
+Nearest
+Grid Style (GSM)
+Show Grid
+Spacing:
+Lines
+Dots
+Cross
+Style:
+Major Every:
+Position:(0.00, 0.00) mm
+Selected: 0
+Ready
+Selected: %1  W: %2  H: %3
+Position:(0.00, 0.00, 0.00)
+Selected: 0
+Model: -
+Ready
+Selected: %1
+Model: %1 | Triangles: %2
+Model: %1
+Entities: %1
+Position:(%1, %2) %3
+Table
+Width:
+Height:
+Visible
+Show Table:
+Border Width:
+Outer:
+Surface:
+Border:
+Text Input Settings
+Text Input
+Please enter text content...
+Font Settings
+Font:
+Size:
+Style:
+Bold
+Italic
+Underline
+Position and Transform
+X Position:
+Y Position:
+Alignment:
+Left Align
+Center Align
+Right Align
+OK
+Cancel
+Edit
+Edit
+All
+Select all models
+Clear
+Clear selection
+Delete
+Delete selected
+Transform Entity
+Transform Type
+Operation:
+Move
+Rotate
+Scale
+Shear
+Mirror
+Target Entity
+Entity:
+All entities
+Parameters
+X offset:
+ mm
+Y offset:
+Angle (degrees):
+Center X:
+Center Y:
+Scale X:
+Scale Y:
+Shear X:
+Shear Y:
+Mirror Axis:
+X Axis
+Y Axis
+Custom Line
+Axis X:
+Axis Y:
+Start X:
+Start Y:
+End X:
+End Y:
+OK
+Cancel
+Entity ID: %1
+View
+Camera Frustum
+Field of View:
+Near Plane:
+Far Plane:
+Effects
+Enable Fog
+Anti-Aliasing
+MSAA Samples:
+View
+Layer
+Layer Manager
+New Layer
+Delete Layer
+Unit
+mm
+cm
+inch
+Grid &amp; Snap
+Show Grid
+Snap Enabled
+Ortho Mode
+Angle Snap
+Switch to 3D Mode
+Zoom
+Zoom In
+Zoom Out
+Zoom to Fit
+Zoom to Selection
+Reset View
+View
+Switch to 2D Mode
+Reset View
+Fit All
+Standard Views
+Front
+Back
+Left
+Right
+Top
+Bottom
+Axonometric
+Isometric
+Dimetric
+Trimetric
+SE Isometric
+SW Isometric
+NE Isometric
+NW Isometric
+Wireframe
+Show Grid
+Show Bounding Box
+Show Floor
+New layer created: %1
+Layer deleted
+Moved selection to layer %1
+Unit changed to %1
+Vision
+Shape Detection
+Barcode Detection
+Perspective Correction
+Image Enhancement
+Image Denoising
+Image Sharpening
+Video Capture
+Camera Calibration
+Image Stitching
+Feature Matching
+Face Recognition
+Vision operation executed
+Vision processor is not initialized.
+Shape Detection
+Barcode Detection
+Perspective Correction
+Image Enhancement
+Image Denoising
+Image Sharpening
+Video Capture
+Camera Calibration
+Image Stitching
+Feature Matching
+Face Recognition
+Vision module is not available. Build with BUILD_VISION=ON to use this feature.
+Select Calibration Images
+Images (*.png *.jpg *.jpeg *.bmp);;All Files (*.*)
