@@ -67,7 +67,7 @@ namespace PyHost
     TaskHandle PythonHost::runTask(const TaskRequest& request, TaskCallback callback)
     {
         TaskRequest traced = request;
-        traced.traceId = SyTrace::resolveTraceId(request.traceId);
+        traced.traceId = SyTrace::resolveTraceIdString(request.traceId.c_str());
 
         if (!m_initialized)
         {

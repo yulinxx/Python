@@ -32,7 +32,7 @@ namespace PyHost
 
         std::string resolvedTraceId(const TaskRequest& request)
         {
-            return SyTrace::resolveTraceId(request.traceId);
+            return SyTrace::resolveTraceIdString(request.traceId.c_str());
         }
     }
 
