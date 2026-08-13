@@ -1,0 +1,82 @@
+# ============================================================
+# Python 子模块忽略规则（跨平台）
+# ------------------------------------------------------------
+# 本仓库为 git 子模块，内部由子模块自己的 .gitignore 控制忽略。
+# 该文件用于统一忽略 PyBind11 + CMake 构建产生的中间产物。
+# ============================================================
+
+# ---- Python 缓存 ----
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+
+# ---- 虚拟环境 ----
+venv/
+.venv/
+**/venv/
+**/.venv/
+
+# ---- 打包与发布产物 ----
+*.egg-info/
+**/*.egg-info/
+dist/
+**/dist/
+build/
+**/build/
+
+# ---- PyBind 扩展模块产物（跨平台后缀）----
+#   源码在 sanyi/ 下，模块名为 _sanyi_core：
+#     Windows → _sanyi_core.*.pyd / .lib / .exp
+#     macOS   → _sanyi_core.*.so (*.cpython-*-darwin.*)
+#     Linux   → _sanyi_core.*.so (*.cpython-*-linux-*.so)
+_sanyi_core.*.pyd
+_sanyi_core.*.so
+_sanyi_core.*.dll
+_sanyi_core.*.dylib
+_sanyi_core.*.lib
+_sanyi_core.*.exp
+_sanyi_core.*.obj
+_sanyi_core.*.o
+_sanyi_core.*.pdb
+# 兜底：任何位置出现的扩展模块目标文件
+**/*.pyd
+**/*.so
+**/*.dll
+**/*.dylib
+**/*.exp
+**/*.obj
+**/*.o
+**/*.pdb
+**/*.whl
+**/*.wasi
+
+# ---- CMake / 构建系统中间文件 ----
+**/cmake-build-*/
+**/CMakeFiles/
+**/CMakeCache.txt
+**/*.cmake
+**/Makefile
+**/*.ninja
+**/*.ninja_deps
+**/*.ninja_log
+**/_deps/
+
+# ---- IDE / OS ----
+.idea/
+.vscode/
+
+# macOS
+.DS_Store
+**/.DS_Store
+.AppleDouble/
+.fseventsd/
+.Spotlight-V100/
+.Trashes/
+# AppleDouble / 资源派生文件 (Finder 产生的隐藏文件)
+._*
+
+# Windows
+Thumbs.db
+desktop.ini
+
