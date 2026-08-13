@@ -34,17 +34,14 @@ namespace PyHost
         {
             return SyTrace::resolveTraceIdString(request.traceId.c_str());
         }
-    }
+    }  // namespace
 
     TaskExecutor::TaskExecutor(RuntimeManager& runtime)
         : m_runtime(runtime)
     {
     }
 
-    TaskHandle TaskExecutor::run(
-        const TaskRequest& request,
-        const TaskDefinition& definition,
-        TaskCallback callback)
+    TaskHandle TaskExecutor::run(const TaskRequest& request, const TaskDefinition& definition, TaskCallback callback)
     {
         const TaskHandle handle = m_nextHandle.fetch_add(1);
         {
@@ -84,8 +81,10 @@ namespace PyHost
             }
 
             if (callback)
+            {
                 callback(result);
-            }).detach();
+            }
+        }).detach();
 
         return handle;
     }
@@ -95,7 +94,9 @@ namespace PyHost
         std::lock_guard<std::mutex> lock(m_mutex);
         const auto it = m_cancelFlags.find(handle);
         if (it == m_cancelFlags.end())
+        {
             return false;
+        }
         it->second.store(true);
         return true;
     }
@@ -108,9 +109,7 @@ namespace PyHost
     }
 
     TaskResult TaskExecutor::executeSubprocess(
-        const TaskRequest& request,
-        const TaskDefinition& definition,
-        TaskHandle handle)
+        const TaskRequest& request, const TaskDefinition& definition, TaskHandle handle)
     {
         TaskResult result;
         result.handle = handle;
@@ -145,11 +144,13 @@ namespace PyHost
         payload.insert("entry", QString::fromStdString(definition.entry));
         payload.insert("request_id", QString::fromStdString(requestId));
         if (!result.traceId.empty())
+        {
             payload.insert("trace_id", QString::fromStdString(result.traceId));
+        }
 
         QJsonParseError inputParseError;
-        const QJsonDocument inputDoc = QJsonDocument::fromJson(
-            QByteArray::fromStdString(request.inputJson), &inputParseError);
+        const QJsonDocument inputDoc =
+            QJsonDocument::fromJson(QByteArray::fromStdString(request.inputJson), &inputParseError);
         if (inputParseError.error != QJsonParseError::NoError || !inputDoc.isObject())
         {
             result.error = TaskError::InvalidInput;
@@ -166,15 +167,15 @@ namespace PyHost
         env.insert("SANYI_PYTHON_ROOT", QString::fromStdString(pythonRoot));
         env.insert("PYTHONPATH", QString::fromStdString(pythonRoot));
         if (!result.traceId.empty())
+        {
             env.insert("SANYI_TRACE_ID", QString::fromStdString(result.traceId));
+        }
         process.setProcessEnvironment(env);
         process.setWorkingDirectory(QString::fromStdString(pythonRoot));
         process.setProgram(QString::fromStdString(m_runtime.pythonExecutable()));
-        process.setArguments(QStringList()
-            << "-m"
-            << "sanyi.runtime"
-            << "--root"
-            << QString::fromStdString(pythonRoot));
+        process.setArguments(QStringList() << "-m"
+                                           << "sanyi.runtime"
+                                           << "--root" << QString::fromStdString(pythonRoot));
 
         SY_INFOF("[PyHost] starting task '%s' handle=%llu trace=%s request_id=%s",
             request.taskId.c_str(),
@@ -188,7 +189,9 @@ namespace PyHost
             result.error = TaskError::PythonNotFound;
             result.message = process.errorString().toStdString();
             SY_WARNF("[PyHost] task '%s' failed to start python trace=%s err=%s",
-                request.taskId.c_str(), trace, result.message.c_str());
+                request.taskId.c_str(),
+                trace,
+                result.message.c_str());
             return result;
         }
 
@@ -202,8 +205,7 @@ namespace PyHost
             process.waitForFinished(3000);
             result.error = TaskError::Timeout;
             result.message = "Python task timed out";
-            SY_WARNF("[PyHost] task '%s' timed out trace=%s timeout=%dms",
-                request.taskId.c_str(), trace, timeoutMs);
+            SY_WARNF("[PyHost] task '%s' timed out trace=%s timeout=%dms", request.taskId.c_str(), trace, timeoutMs);
             return result;
         }
 
@@ -219,18 +221,15 @@ namespace PyHost
         const QByteArray stderrBytes = process.readAllStandardError();
         if (!stderrBytes.isEmpty())
         {
-            SY_WARNF("[PyHost] task '%s' stderr trace=%s: %s",
-                request.taskId.c_str(), trace, stderrBytes.constData());
+            SY_WARNF("[PyHost] task '%s' stderr trace=%s: %s", request.taskId.c_str(), trace, stderrBytes.constData());
         }
 
         if (process.exitCode() != 0)
         {
             result.error = TaskError::ScriptFailed;
-            result.message = stderrBytes.isEmpty()
-                ? "Python worker exited with non-zero status"
-                : stderrBytes.toStdString();
-            SY_WARNF("[PyHost] task '%s' exit=%d trace=%s",
-                request.taskId.c_str(), process.exitCode(), trace);
+            result.message =
+                stderrBytes.isEmpty() ? "Python worker exited with non-zero status" : stderrBytes.toStdString();
+            SY_WARNF("[PyHost] task '%s' exit=%d trace=%s", request.taskId.c_str(), process.exitCode(), trace);
             return result;
         }
 
@@ -247,28 +246,35 @@ namespace PyHost
         const QJsonObject responseObj = responseDoc.object();
         result.ok = responseObj.value("ok").toBool(false);
         if (responseObj.value("error").isString())
+        {
             result.message = responseObj.value("error").toString().toStdString();
+        }
 
         if (responseObj.contains("result"))
         {
             const QJsonValue resultValue = responseObj.value("result");
-            result.resultJson = QJsonDocument(resultValue.isObject()
-                ? QJsonObject(resultValue.toObject())
-                : QJsonObject{ {"value", resultValue} }).toJson(QJsonDocument::Compact).toStdString();
+            result.resultJson = QJsonDocument(
+                resultValue.isObject() ? QJsonObject(resultValue.toObject()) : QJsonObject{ { "value", resultValue } })
+                                    .toJson(QJsonDocument::Compact)
+                                    .toStdString();
         }
         if (responseObj.contains("metrics") && responseObj.value("metrics").isObject())
         {
-            result.metricsJson = QJsonDocument(responseObj.value("metrics").toObject())
-                .toJson(QJsonDocument::Compact).toStdString();
+            result.metricsJson =
+                QJsonDocument(responseObj.value("metrics").toObject()).toJson(QJsonDocument::Compact).toStdString();
         }
 
         if (!result.ok && result.error == TaskError::None)
+        {
             result.error = TaskError::ScriptFailed;
+        }
 
         SY_INFOF("[PyHost] task '%s' finished ok=%d trace=%s handle=%llu",
-            request.taskId.c_str(), result.ok ? 1 : 0, trace,
+            request.taskId.c_str(),
+            result.ok ? 1 : 0,
+            trace,
             static_cast<unsigned long long>(handle));
 
         return result;
     }
-}
+}  // namespace PyHost

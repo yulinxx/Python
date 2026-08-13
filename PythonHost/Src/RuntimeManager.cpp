@@ -29,7 +29,7 @@ namespace PyHost
             return (fs::path(venvPath) / "bin" / "python3").string();
 #endif
         }
-    }
+    }  // namespace
 
     bool RuntimeManager::initialize(const Config& config)
     {
@@ -113,22 +113,30 @@ namespace PyHost
     std::string RuntimeManager::resolvePythonRoot() const
     {
         if (fs::exists(m_config.pythonRoot))
+        {
             return m_config.pythonRoot;
+        }
         if (!m_config.sourcePythonRoot.empty() && fs::exists(m_config.sourcePythonRoot))
+        {
             return m_config.sourcePythonRoot;
+        }
         return m_config.pythonRoot;
     }
 
     std::string RuntimeManager::resolveTasksConfigPath() const
     {
         if (fs::exists(m_config.tasksConfigPath))
+        {
             return m_config.tasksConfigPath;
+        }
 
         if (!m_config.sourcePythonRoot.empty())
         {
             const std::string devTasks = (fs::path(m_config.sourcePythonRoot) / "tasks.json").string();
             if (fs::exists(devTasks))
+            {
                 return devTasks;
+            }
         }
 
         return m_config.tasksConfigPath;
@@ -137,21 +145,29 @@ namespace PyHost
     bool RuntimeManager::probePythonExecutable(const std::string& candidate)
     {
         if (candidate.empty())
+        {
             return false;
+        }
 
         QProcess process;
         process.setProgram(QString::fromStdString(candidate));
         process.setArguments(QStringList() << "--version");
         process.start();
         if (!process.waitForStarted(3000))
+        {
             return false;
+        }
         if (!process.waitForFinished(5000) || process.exitCode() != 0)
+        {
             return false;
+        }
 
         m_pythonExecutable = candidate;
         m_pythonVersion = QString::fromUtf8(process.readAllStandardOutput()).trimmed().toStdString();
         if (m_pythonVersion.empty())
+        {
             m_pythonVersion = QString::fromUtf8(process.readAllStandardError()).trimmed().toStdString();
+        }
         return !m_pythonVersion.empty();
     }
 
@@ -159,4 +175,4 @@ namespace PyHost
     {
         return !m_pythonVersion.empty();
     }
-}
+}  // namespace PyHost

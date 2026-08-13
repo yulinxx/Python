@@ -13,7 +13,7 @@ namespace PyHost
         RuntimeManager g_runtime;
         TaskRegistry g_registry;
         TaskExecutor g_executor(g_runtime);
-    }
+    }  // namespace
 
     PythonHost& PythonHost::instance()
     {
@@ -27,7 +27,9 @@ namespace PyHost
     bool PythonHost::initialize(const Config& config)
     {
         if (m_initialized)
+        {
             return true;
+        }
 
         m_config = config;
 
@@ -51,7 +53,9 @@ namespace PyHost
     void PythonHost::shutdown()
     {
         if (!m_initialized)
+        {
             return;
+        }
 
         g_runtime.shutdown();
         g_registry.clear();
@@ -107,7 +111,7 @@ namespace PyHost
 
         return g_executor.run(traced, definition, [this, callback](const TaskResult& result) {
             deliverCallback(callback, result);
-            });
+        });
     }
 
     bool PythonHost::cancel(TaskHandle handle)
@@ -134,16 +138,18 @@ namespace PyHost
     void PythonHost::deliverCallback(TaskCallback callback, const TaskResult& result)
     {
         if (!callback)
+        {
             return;
+        }
 
         if (m_config.dispatchCallbacksOnMainThread)
         {
             postToMainThread([callback, result]() {
                 callback(result);
-                });
+            });
             return;
         }
 
         callback(result);
     }
-}
+}  // namespace PyHost

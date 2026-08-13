@@ -10,7 +10,9 @@ namespace PyHost
     void postToMainThread(std::function<void()> fn)
     {
         if (!fn)
+        {
             return;
+        }
 
         QCoreApplication* app = QCoreApplication::instance();
         if (!app)
@@ -27,6 +29,6 @@ namespace PyHost
 
         QTimer::singleShot(0, app, [fn = std::move(fn)]() {
             fn();
-            });
+        });
     }
-}
+}  // namespace PyHost

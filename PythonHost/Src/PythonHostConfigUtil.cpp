@@ -12,23 +12,19 @@ namespace PyHost
         {
             return (fs::path(base) / child).string();
         }
-    }
+    }  // namespace
 
-    Config buildConfigFromApplicationDir(
-        const std::string& applicationDir,
-        const std::string& sourceRoot)
+    Config buildConfigFromApplicationDir(const std::string& applicationDir, const std::string& sourceRoot)
     {
         Config config;
         config.pythonRoot = joinPath(applicationDir, "Python");
         config.venvPath = joinPath(config.pythonRoot, "venv");
         config.extensionPath = joinPath(config.pythonRoot, "sanyi");
         config.tasksConfigPath = joinPath(config.pythonRoot, "tasks.json");
-        config.sourcePythonRoot = sourceRoot.empty()
-            ? std::string()
-            : joinPath(sourceRoot, "Python");
+        config.sourcePythonRoot = sourceRoot.empty() ? std::string() : joinPath(sourceRoot, "Python");
         config.enableEmbedded = false;
         config.dispatchCallbacksOnMainThread = true;
         config.workerThreads = 2;
         return config;
     }
-}
+}  // namespace PyHost

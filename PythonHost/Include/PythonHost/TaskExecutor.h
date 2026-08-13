@@ -15,17 +15,13 @@ namespace PyHost
     public:
         explicit TaskExecutor(RuntimeManager& runtime);
 
-        TaskHandle run(const TaskRequest& request,
-            const TaskDefinition& definition,
-            TaskCallback callback);
+        TaskHandle run(const TaskRequest& request, const TaskDefinition& definition, TaskCallback callback);
 
         bool cancel(TaskHandle handle);
         bool isRunning(TaskHandle handle) const;
 
     private:
-        TaskResult executeSubprocess(const TaskRequest& request,
-            const TaskDefinition& definition,
-            TaskHandle handle);
+        TaskResult executeSubprocess(const TaskRequest& request, const TaskDefinition& definition, TaskHandle handle);
 
         RuntimeManager& m_runtime;
         std::atomic<TaskHandle> m_nextHandle{ 1 };
@@ -33,4 +29,4 @@ namespace PyHost
         std::unordered_map<TaskHandle, std::atomic<bool>> m_cancelFlags;
         std::unordered_map<TaskHandle, std::atomic<bool>> m_runningFlags;
     };
-}
+}  // namespace PyHost

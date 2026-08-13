@@ -29,4 +29,4 @@ namespace PyHost
         std::string m_pythonVersion;
         bool m_initialized = false;
     };
-}
+}  // namespace PyHost

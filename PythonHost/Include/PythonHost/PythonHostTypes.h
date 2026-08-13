@@ -90,4 +90,4 @@ namespace PyHost
     };
 
     using TaskCallback = std::function<void(const TaskResult&)>;
-}
+}  // namespace PyHost

@@ -18,4 +18,4 @@ namespace PyHost
     private:
         std::unordered_map<std::string, TaskDefinition> m_tasks;
     };
-}
+}  // namespace PyHost

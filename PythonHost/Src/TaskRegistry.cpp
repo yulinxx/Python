@@ -14,10 +14,12 @@ namespace PyHost
         TaskMode parseMode(const QString& mode)
         {
             if (mode == "bridge")
+            {
                 return TaskMode::Bridge;
+            }
             return TaskMode::Subprocess;
         }
-    }
+    }  // namespace
 
     bool TaskRegistry::load(const std::string& tasksConfigPath)
     {
@@ -34,8 +36,7 @@ namespace PyHost
         const QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
         if (parseError.error != QJsonParseError::NoError || !doc.isObject())
         {
-            SY_ERRORF("[PyHost] Failed to parse tasks.json: %s",
-                parseError.errorString().toUtf8().constData());
+            SY_ERRORF("[PyHost] Failed to parse tasks.json: %s", parseError.errorString().toUtf8().constData());
             return false;
         }
 
@@ -44,7 +45,9 @@ namespace PyHost
         for (auto it = tasks.begin(); it != tasks.end(); ++it)
         {
             if (!it.value().isObject())
+            {
                 continue;
+            }
 
             const QJsonObject taskObj = it.value().toObject();
             TaskDefinition definition;
@@ -62,8 +65,7 @@ namespace PyHost
             m_tasks.emplace(definition.taskId, definition);
         }
 
-        SY_INFOF("[PyHost] Loaded %d task(s) from %s",
-            static_cast<int>(m_tasks.size()), tasksConfigPath.c_str());
+        SY_INFOF("[PyHost] Loaded %d task(s) from %s", static_cast<int>(m_tasks.size()), tasksConfigPath.c_str());
         return !m_tasks.empty();
     }
 
@@ -76,7 +78,9 @@ namespace PyHost
     {
         const auto it = m_tasks.find(taskId);
         if (it == m_tasks.end())
+        {
             return false;
+        }
         outDefinition = it->second;
         return true;
     }
@@ -85,4 +89,4 @@ namespace PyHost
     {
         return static_cast<int>(m_tasks.size());
     }
-}
+}  // namespace PyHost

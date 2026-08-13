@@ -32,4 +32,4 @@ namespace PyHost
         Config m_config;
         bool m_initialized = false;
     };
-}
+}  // namespace PyHost
