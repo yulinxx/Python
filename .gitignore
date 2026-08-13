@@ -73,7 +73,8 @@ _sanyi_core.*.pdb
 .fseventsd/
 .Spotlight-V100/
 .Trashes/
-._*            # AppleDouble / 资源派生文件 (Finder 产生的隐藏文件)
+# AppleDouble / 资源派生文件 (Finder 产生的隐藏文件)
+._*
 
 # Windows
 Thumbs.db
