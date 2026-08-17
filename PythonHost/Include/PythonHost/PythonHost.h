@@ -9,7 +9,10 @@ namespace PyHost
     {
     public:
         static PythonHost& instance();
+        PythonHost(const PythonHost&) = delete;
+        PythonHost& operator=(const PythonHost&) = delete;
 
+    public:
         bool initialize(const Config& config);
         void shutdown();
         bool isInitialized() const;
@@ -24,9 +27,8 @@ namespace PyHost
     private:
         PythonHost();
         ~PythonHost();
-        PythonHost(const PythonHost&) = delete;
-        PythonHost& operator=(const PythonHost&) = delete;
 
+    private:
         void deliverCallback(TaskCallback callback, const TaskResult& result);
 
         Config m_config;
