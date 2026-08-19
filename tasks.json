@@ -1,0 +1,15 @@
+{
+  "protocol": 1,
+  "tasks": {
+    "echo": {
+      "entry": "sanyi.tasks.echo:run",
+      "mode": "subprocess",
+      "timeout_ms": 5000
+    },
+    "face.detect": {
+      "entry": "sanyi.tasks.face:detect",
+      "mode": "subprocess",
+      "timeout_ms": 30000
+    }
+  }
+}
