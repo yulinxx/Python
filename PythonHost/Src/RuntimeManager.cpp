@@ -83,12 +83,13 @@ namespace PyHost
         return false;
     }
 
-    void RuntimeManager::shutdown()
-    {
-        m_initialized = false;
-        m_pythonExecutable.clear();
-        m_pythonVersion.clear();
-    }
+void RuntimeManager::shutdown()
+{
+    SY_INFO("[PyHost] RuntimeManager: shutting down");
+    m_initialized = false;
+    m_pythonExecutable.clear();
+    m_pythonVersion.clear();
+}
 
     bool RuntimeManager::isInitialized() const
     {
