@@ -38,7 +38,16 @@ Makefile
 ## OS files
 Thumbs.db
 Desktop.ini
+# macOS
 .DS_Store
+._*
+.Spotlight-V100
+.Trashes
+.fseventsd
+# Linux
+*~
+.directory
+.Trash-*
 
 ## Python artifacts
 __pycache__/
