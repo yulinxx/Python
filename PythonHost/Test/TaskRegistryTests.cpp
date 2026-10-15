@@ -6,6 +6,9 @@
  * - load / clear 任务配置加载
  * - lookup 任务查找
  * - taskCount 任务计数
+ *
+ * 测试 JSON 必须与生产配置同 schema（见 PythonHost/tasks.json）：
+ *   tasks 是**对象**（taskId -> 任务定义），超时键是 timeout_ms。
  */
 #include <gtest/gtest.h>
 
@@ -36,14 +39,14 @@ TEST(TaskRegistryTest, Load_ValidConfig)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "test_task_1",
+        "protocol": 1,
+        "tasks": {
+            "test_task_1": {
                 "entry": "scripts/test.py",
-                "mode": "Subprocess",
-                "timeoutMs": 30000
+                "mode": "subprocess",
+                "timeout_ms": 30000
             }
-        ]
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);
@@ -83,14 +86,14 @@ TEST(TaskRegistryTest, Lookup_ExistingTask)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "my_task",
+        "protocol": 1,
+        "tasks": {
+            "my_task": {
                 "entry": "scripts/my_task.py",
-                "mode": "Subprocess",
-                "timeoutMs": 5000
+                "mode": "subprocess",
+                "timeout_ms": 5000
             }
-        ]
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);
@@ -112,13 +115,13 @@ TEST(TaskRegistryTest, Lookup_NonExistingTask)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "existing_task",
+        "protocol": 1,
+        "tasks": {
+            "existing_task": {
                 "entry": "scripts/test.py",
-                "mode": "Subprocess"
+                "mode": "subprocess"
             }
-        ]
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);
@@ -137,16 +140,11 @@ TEST(TaskRegistryTest, Clear_AfterLoad)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "task1",
-                "entry": "scripts/test.py"
-            },
-            {
-                "taskId": "task2",
-                "entry": "scripts/test2.py"
-            }
-        ]
+        "protocol": 1,
+        "tasks": {
+            "task1": { "entry": "scripts/test.py" },
+            "task2": { "entry": "scripts/test2.py" }
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);
@@ -166,23 +164,12 @@ TEST(TaskRegistryTest, Load_MultipleTasks)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "task_a",
-                "entry": "scripts/a.py",
-                "timeoutMs": 10000
-            },
-            {
-                "taskId": "task_b",
-                "entry": "scripts/b.py",
-                "timeoutMs": 20000
-            },
-            {
-                "taskId": "task_c",
-                "entry": "scripts/c.py",
-                "timeoutMs": 30000
-            }
-        ]
+        "protocol": 1,
+        "tasks": {
+            "task_a": { "entry": "scripts/a.py", "timeout_ms": 10000 },
+            "task_b": { "entry": "scripts/b.py", "timeout_ms": 20000 },
+            "task_c": { "entry": "scripts/c.py", "timeout_ms": 30000 }
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);
@@ -212,12 +199,10 @@ TEST(TaskRegistryTest, DefaultTaskMode)
     PyHost::TaskRegistry registry;
 
     const std::string config = R"({
-        "tasks": [
-            {
-                "taskId": "default_mode_task",
-                "entry": "scripts/test.py"
-            }
-        ]
+        "protocol": 1,
+        "tasks": {
+            "default_mode_task": { "entry": "scripts/test.py" }
+        }
     })";
 
     const std::string configPath = createTempTasksConfig(config);

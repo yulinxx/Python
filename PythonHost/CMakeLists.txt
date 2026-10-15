@@ -53,3 +53,9 @@ sanyi_add_shared_library(${LIB_NAME}
     QT_COMPONENTS
         Core
 )
+
+# --- 单元测试 ---
+# 由根 CMakeLists 的 BUILD_PYTHONHOST_TESTS 控制（统一挂载点，独立入口不得重复）。
+if(BUILD_PYTHONHOST_TESTS)
+    add_subdirectory(Test)
+endif()
