@@ -9,6 +9,7 @@
 #include <QProcessEnvironment>
 
 #include <chrono>
+#include <memory>
 #include <sstream>
 #include <thread>
 
@@ -41,6 +42,84 @@ namespace PyHost
     {
     }
 
+    TaskExecutor::~TaskExecutor()
+    {
+        shutdownAll();
+    }
+
+    void TaskExecutor::shutdownAll()
+    {
+        // 三步清理：置 cancel flag → kill 所有 QProcess → join 所有线程
+        // 顺序不能反：先 kill 让阻塞在 waitForFinished 的 worker 立即返回，join 才能及时收干净
+        std::vector<QProcess*> processesToKill;
+        std::vector<TaskHandle> handlesToJoin;
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            // 置所有取消标志
+            for (auto& [h, flag] : m_cancelFlags)
+            {
+                flag.store(true);
+            }
+            // 收集 QProcess 裸指针（worker 内部持有 unique_ptr，我们只 kill 不 delete）
+            for (auto& [h, proc] : m_processes)
+            {
+                processesToKill.push_back(proc);
+            }
+            // 收集活跃线程的 handle
+            for (auto& [h, t] : m_threads)
+            {
+                handlesToJoin.push_back(h);
+            }
+        }
+
+        // kill 所有子进程——让阻塞在 waitForFinished 的 worker 立即返回
+        for (QProcess* proc : processesToKill)
+        {
+            if (proc)
+            {
+                proc->kill();
+            }
+        }
+        SY_INFOF("[PyHost] shutdownAll: %zu process(es) killed, joining %zu worker(s)",
+            processesToKill.size(), handlesToJoin.size());
+
+        // 每个线程给 3 秒超时：kill 子进程后 waitForFinished 应该立即返回；
+        // 超时只打 WARN 不放弃 join——joinable 的 std::thread 析构会触发 std::terminate
+        const auto perThreadTimeout = std::chrono::seconds(3);
+        for (TaskHandle handle : handlesToJoin)
+        {
+            std::thread worker;
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                auto it = m_threads.find(handle);
+                if (it != m_threads.end() && it->second.joinable())
+                {
+                    worker = std::move(it->second);
+                    m_threads.erase(it);
+                }
+            }
+            if (worker.joinable())
+            {
+                // 先 sleep 等待 kill 生效
+                std::this_thread::sleep_for(perThreadTimeout);
+                if (worker.joinable())
+                {
+                    worker.join();
+                }
+            }
+        }
+
+        // 最终清理残留的 map 条目
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_threads.clear();
+            m_processes.clear();
+            m_cancelFlags.clear();
+            m_runningFlags.clear();
+        }
+        SY_INFO("[PyHost] shutdownAll: all workers joined and state cleared");
+    }
+
     TaskHandle TaskExecutor::run(const TaskRequest& request, const TaskDefinition& definition, TaskCallback callback)
     {
         const TaskHandle handle = m_nextHandle.fetch_add(1);
@@ -50,7 +129,8 @@ namespace PyHost
             m_runningFlags.emplace(handle, true);
         }
 
-        std::thread([this, request, definition, callback, handle]() {
+        // worker 完成后自行清理 map 条目
+        auto worker = std::thread([this, request, definition, callback, handle]() {
             TaskResult result;
             result.handle = handle;
             result.taskId = request.taskId;
@@ -78,13 +158,20 @@ namespace PyHost
                 m_runningFlags[handle].store(false);
                 m_cancelFlags.erase(handle);
                 m_runningFlags.erase(handle);
+                m_threads.erase(handle);
             }
 
             if (callback)
             {
                 callback(result);
             }
-        }).detach();
+        });
+
+        // 必须在锁外 move thread（避免析构 shutdownAll 与 run 并发访问 m_threads）
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_threads[handle] = std::move(worker);
+        }
 
         return handle;
     }
@@ -161,6 +248,15 @@ namespace PyHost
         payload.insert("input", inputDoc.object());
 
         QProcess process;
+        // 注册到 m_processes 供 shutdownAll kill；RAII guard 确保所有 return 路径自动擦除
+        {
+            std::lock_guard<std::mutex> lock(m_mutex);
+            m_processes[handle] = &process;
+        }
+        struct ProcessGuard { TaskExecutor* o; TaskHandle h; ProcessGuard(TaskExecutor* oo, TaskHandle hh) : o(oo), h(hh) {}
+            ~ProcessGuard() { std::lock_guard<std::mutex> lk(o->m_mutex); o->m_processes.erase(h); }
+        } procGuard(this, handle);
+
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("PYTHONUTF8", "1");
         env.insert("PYTHONIOENCODING", "utf-8");

@@ -47,10 +47,9 @@ sanyi_add_shared_library(${LIB_NAME}
         "${CMAKE_CURRENT_SOURCE_DIR}/Include"
     PRIVATE_INCLUDE_DIRS
         "${SANYI_LOG_DIR}/Include"
-    LINK_LIBRARIES
-        PRIVATE
-            Log
-    QT_COMPONENTS
+    PRIVATE_LINK_LIBRARIES
+        Log
+    PRIVATE_QT_COMPONENTS
         Core
 )
 
