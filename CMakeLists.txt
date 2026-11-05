@@ -18,13 +18,13 @@ cmake_minimum_required(VERSION 4.3)
 #      运行期的 Python 解释器由宿主环境提供，构建期只编译框架本身。
 #
 #   3) 测试由内层 PythonHost/PythonHost/CMakeLists.txt 在
-#      BUILD_PYTHONHOST_TESTS=ON 时挂载，本文件不得重复 add_subdirectory(Test)。
+#      BUILD_TESTS=ON 时挂载，本文件不得重复 add_subdirectory(Test)。
 #
 # 用法：
 #   cmake -S PythonHost -B PythonHost/build
 #   cmake --build PythonHost/build --config Release
 #   ctest --test-dir PythonHost/build -C Release
-#   cmake -S PythonHost -B PythonHost/build -DBUILD_PYTHONHOST_TESTS=OFF  # 只编库
+#   cmake -S PythonHost -B PythonHost/build -DBUILD_TESTS=OFF  # 只编库
 # ============================================================================
 
 include(${CMAKE_CURRENT_LIST_DIR}/../Config.cmake)
@@ -43,17 +43,15 @@ sanyi_setup_compiler_options()
 option(BUILD_PYTHONHOST_EXAMPLE "Build PythonHost usage example" ON)
 
 # --- 测试与兄弟模块 ---------------------------------------------------------
-# 先关兄弟测试、再探测 GTest（缺失时把测试开关统一降级为 OFF），
+# 先声明本构建树的测试模块范围、再探测 GTest（缺失时把唯一总开关降级为 OFF），
 # 两步都必须发生在拉入兄弟模块之前。
-sanyi_only_own_tests(BUILD_PYTHONHOST_TESTS)
-if(BUILD_PYTHONHOST_TESTS)
-    sanyi_find_gtest()
-endif()
+sanyi_only_own_tests(PYTHONHOST)
+sanyi_finalize_tests()
 
 # PythonHost 只依赖 Log（内层 PRIVATE 链接诊断输出）。
 sanyi_add_sibling(Log "${SANYI_LOG_DIR}")
 
-# 内层：创建 PythonHost DLL、挂载测试（BUILD_PYTHONHOST_TESTS 时）、输出状态
+# 内层：创建 PythonHost DLL、挂载测试（BUILD_TESTS 时）、输出状态
 add_subdirectory(PythonHost)
 
 # --- 示例（独立构建专属） ---------------------------------------------------
@@ -67,7 +65,6 @@ message(STATUS "========================================")
 message(STATUS "  [Standalone: ${PROJECT_NAME}]")
 message(STATUS "========================================")
 message(STATUS "  Version:        ${PROJECT_VERSION}")
-message(STATUS "  Build Tests:    ${BUILD_PYTHONHOST_TESTS}")
 message(STATUS "  Build Example:  ${BUILD_PYTHONHOST_EXAMPLE}")
 message(STATUS "  Output:         ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}")
 message(STATUS "========================================")

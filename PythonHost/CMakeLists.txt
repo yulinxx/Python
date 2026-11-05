@@ -54,7 +54,8 @@ sanyi_add_shared_library(${LIB_NAME}
 )
 
 # --- 单元测试 ---
-# 由根 CMakeLists 的 BUILD_PYTHONHOST_TESTS 控制（统一挂载点，独立入口不得重复）。
-if(BUILD_PYTHONHOST_TESTS)
+# 由唯一总开关 BUILD_TESTS 与当前构建范围控制（统一挂载点，独立入口不得重复）。
+sanyi_module_tests_enabled(PYTHONHOST _pythonhost_tests)
+if(_pythonhost_tests)
     add_subdirectory(Test)
 endif()
