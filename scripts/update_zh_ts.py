@@ -1,17 +1,17 @@
 #!/usr/bin/env python3
-"""Fill SanYiCAD_zh.ts translations and remove unfinished markers."""
+"""Fill April_zh.ts translations and remove unfinished markers."""
 import re
 import xml.sax.saxutils as xml
 from pathlib import Path
 
-TS_PATH = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "SanYiCAD_zh.ts"
+TS_PATH = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "April_zh.ts"
 
 # English -> Simplified Chinese
 TRANSLATIONS = {
     "Copy Info": "复制信息",
-    "SanYi CAD": "三一 CAD",
+    "April CAD": "三一 CAD",
     "Computer-Aided Design Software": "计算机辅助设计软件",
-    "SanYi3D": "三一 3D",
+    "Apr3D": "三一 3D",
     "3D Model Viewer based on Qt and OpenGL": "基于 Qt 与 OpenGL 的三维模型查看器",
     "Software Information": "软件信息",
     "Version:": "版本：",
@@ -156,8 +156,8 @@ TRANSLATIONS = {
     "Detected %1 shortcut conflict(s). See log for details.": "检测到 %1 个快捷键冲突。详情请查看日志。",
     "Layer: %1 — %2": "图层：%1 — %2",
     "Online documentation is not configured yet.": "在线文档尚未配置。",
-    "SanYi3D - 3D Model Viewer": "三一 3D - 三维模型查看器",
-    "SanYi3D - %1": "三一 3D - %1",
+    "Apr3D - 3D Model Viewer": "三一 3D - 三维模型查看器",
+    "Apr3D - %1": "三一 3D - %1",
     "Unnamed": "未命名",
     "%1 models": "%1 个模型",
     "RMB=Rotate | MMB=Pan | Wheel=Zoom | 1-6=Views | Alt+I/D/T=Axonometric": "右键=旋转 | 中键=平移 | 滚轮=缩放 | 1-6=视图 | Alt+I/D/T=轴测",

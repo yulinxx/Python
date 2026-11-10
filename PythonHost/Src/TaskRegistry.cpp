@@ -1,6 +1,6 @@
 #include "PythonHost/TaskRegistry.h"
 
-#include "Log/SyLogger.h"
+#include "Log/AprLogger.h"
 
 #include <QFile>
 #include <QJsonDocument>
@@ -28,7 +28,7 @@ namespace PyHost
         QFile file(QString::fromStdString(tasksConfigPath));
         if (!file.open(QIODevice::ReadOnly))
         {
-            SY_WARNF("[PyHost] tasks.json not found: %s", tasksConfigPath.c_str());
+            APR_WARNF("[PyHost] tasks.json not found: %s", tasksConfigPath.c_str());
             return false;
         }
 
@@ -36,7 +36,7 @@ namespace PyHost
         const QJsonDocument doc = QJsonDocument::fromJson(file.readAll(), &parseError);
         if (parseError.error != QJsonParseError::NoError || !doc.isObject())
         {
-            SY_ERRORF("[PyHost] Failed to parse tasks.json: %s", parseError.errorString().toUtf8().constData());
+            APR_ERRORF("[PyHost] Failed to parse tasks.json: %s", parseError.errorString().toUtf8().constData());
             return false;
         }
 
@@ -58,14 +58,14 @@ namespace PyHost
 
             if (definition.entry.empty())
             {
-                SY_WARNF("[PyHost] Task '%s' missing entry, skipped", definition.taskId.c_str());
+                APR_WARNF("[PyHost] Task '%s' missing entry, skipped", definition.taskId.c_str());
                 continue;
             }
 
             m_tasks.emplace(definition.taskId, definition);
         }
 
-        SY_INFOF("[PyHost] Loaded %d task(s) from %s", static_cast<int>(m_tasks.size()), tasksConfigPath.c_str());
+        APR_INFOF("[PyHost] Loaded %d task(s) from %s", static_cast<int>(m_tasks.size()), tasksConfigPath.c_str());
         return !m_tasks.empty();
     }
 

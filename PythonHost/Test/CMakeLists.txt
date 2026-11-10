@@ -25,8 +25,8 @@ target_include_directories(PythonHostTests PRIVATE
 )
 
 target_link_libraries(PythonHostTests PRIVATE
-    # Src 白盒编译 include "Log/SyLogger.h" 并调用其 API —— 必须链 Log
-    #（Log 的 PUBLIC 包含路径随链接传播；独立构建由外层 sanyi_add_sibling 拉入）
+    # Src 白盒编译 include "Log/AprLogger.h" 并调用其 API —— 必须链 Log
+    #（Log 的 PUBLIC 包含路径随链接传播；独立构建由外层 apr_add_sibling 拉入）
     Log
     GTest::gtest
     GTest::gtest_main

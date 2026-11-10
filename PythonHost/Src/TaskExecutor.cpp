@@ -1,7 +1,7 @@
 #include "PythonHost/TaskExecutor.h"
 
-#include "Log/SyLogger.h"
-#include "Log/SyTraceContext.h"
+#include "Log/AprLogger.h"
+#include "Log/AprTraceContext.h"
 
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -33,7 +33,7 @@ namespace PyHost
 
         std::string resolvedTraceId(const TaskRequest& request)
         {
-            return SyTrace::resolveTraceIdString(request.traceId.c_str());
+            return AprTrace::resolveTraceIdString(request.traceId.c_str());
         }
     }  // namespace
 
@@ -80,7 +80,7 @@ namespace PyHost
                 proc->kill();
             }
         }
-        SY_INFOF("[PyHost] shutdownAll: %zu process(es) killed, joining %zu worker(s)",
+        APR_INFOF("[PyHost] shutdownAll: %zu process(es) killed, joining %zu worker(s)",
             processesToKill.size(), handlesToJoin.size());
 
         // 每个线程给 3 秒超时：kill 子进程后 waitForFinished 应该立即返回；
@@ -117,7 +117,7 @@ namespace PyHost
             m_cancelFlags.clear();
             m_runningFlags.clear();
         }
-        SY_INFO("[PyHost] shutdownAll: all workers joined and state cleared");
+        APR_INFO("[PyHost] shutdownAll: all workers joined and state cleared");
     }
 
     TaskHandle TaskExecutor::run(const TaskRequest& request, const TaskDefinition& definition, TaskCallback callback)
@@ -209,7 +209,7 @@ namespace PyHost
         {
             result.error = TaskError::NotInitialized;
             result.message = "PythonHost runtime is not initialized";
-            SY_WARNF("[PyHost] task '%s' runtime not ready trace=%s", request.taskId.c_str(), trace);
+            APR_WARNF("[PyHost] task '%s' runtime not ready trace=%s", request.taskId.c_str(), trace);
             return result;
         }
 
@@ -217,7 +217,7 @@ namespace PyHost
         {
             result.error = TaskError::Cancelled;
             result.message = "Task cancelled";
-            SY_WARNF("[PyHost] task '%s' cancelled before subprocess trace=%s", request.taskId.c_str(), trace);
+            APR_WARNF("[PyHost] task '%s' cancelled before subprocess trace=%s", request.taskId.c_str(), trace);
             return result;
         }
 
@@ -242,7 +242,7 @@ namespace PyHost
         {
             result.error = TaskError::InvalidInput;
             result.message = "Task input is not a valid JSON object";
-            SY_WARNF("[PyHost] task '%s' invalid input trace=%s", request.taskId.c_str(), trace);
+            APR_WARNF("[PyHost] task '%s' invalid input trace=%s", request.taskId.c_str(), trace);
             return result;
         }
         payload.insert("input", inputDoc.object());
@@ -260,20 +260,20 @@ namespace PyHost
         QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
         env.insert("PYTHONUTF8", "1");
         env.insert("PYTHONIOENCODING", "utf-8");
-        env.insert("SANYI_PYTHON_ROOT", QString::fromStdString(pythonRoot));
+        env.insert("APR_PYTHON_ROOT", QString::fromStdString(pythonRoot));
         env.insert("PYTHONPATH", QString::fromStdString(pythonRoot));
         if (!result.traceId.empty())
         {
-            env.insert("SANYI_TRACE_ID", QString::fromStdString(result.traceId));
+            env.insert("APR_TRACE_ID", QString::fromStdString(result.traceId));
         }
         process.setProcessEnvironment(env);
         process.setWorkingDirectory(QString::fromStdString(pythonRoot));
         process.setProgram(QString::fromStdString(m_runtime.pythonExecutable()));
         process.setArguments(QStringList() << "-m"
-                                           << "sanyi.runtime"
+                                           << "apr.runtime"
                                            << "--root" << QString::fromStdString(pythonRoot));
 
-        SY_INFOF("[PyHost] starting task '%s' handle=%llu trace=%s request_id=%s",
+        APR_INFOF("[PyHost] starting task '%s' handle=%llu trace=%s request_id=%s",
             request.taskId.c_str(),
             static_cast<unsigned long long>(handle),
             trace,
@@ -284,7 +284,7 @@ namespace PyHost
         {
             result.error = TaskError::PythonNotFound;
             result.message = process.errorString().toStdString();
-            SY_WARNF("[PyHost] task '%s' failed to start python trace=%s err=%s",
+            APR_WARNF("[PyHost] task '%s' failed to start python trace=%s err=%s",
                 request.taskId.c_str(),
                 trace,
                 result.message.c_str());
@@ -301,7 +301,7 @@ namespace PyHost
             process.waitForFinished(3000);
             result.error = TaskError::Timeout;
             result.message = "Python task timed out";
-            SY_WARNF("[PyHost] task '%s' timed out trace=%s timeout=%dms", request.taskId.c_str(), trace, timeoutMs);
+            APR_WARNF("[PyHost] task '%s' timed out trace=%s timeout=%dms", request.taskId.c_str(), trace, timeoutMs);
             return result;
         }
 
@@ -309,7 +309,7 @@ namespace PyHost
         {
             result.error = TaskError::Cancelled;
             result.message = "Task cancelled";
-            SY_WARNF("[PyHost] task '%s' cancelled during run trace=%s", request.taskId.c_str(), trace);
+            APR_WARNF("[PyHost] task '%s' cancelled during run trace=%s", request.taskId.c_str(), trace);
             return result;
         }
 
@@ -317,7 +317,7 @@ namespace PyHost
         const QByteArray stderrBytes = process.readAllStandardError();
         if (!stderrBytes.isEmpty())
         {
-            SY_WARNF("[PyHost] task '%s' stderr trace=%s: %s", request.taskId.c_str(), trace, stderrBytes.constData());
+            APR_WARNF("[PyHost] task '%s' stderr trace=%s: %s", request.taskId.c_str(), trace, stderrBytes.constData());
         }
 
         if (process.exitCode() != 0)
@@ -325,7 +325,7 @@ namespace PyHost
             result.error = TaskError::ScriptFailed;
             result.message =
                 stderrBytes.isEmpty() ? "Python worker exited with non-zero status" : stderrBytes.toStdString();
-            SY_WARNF("[PyHost] task '%s' exit=%d trace=%s", request.taskId.c_str(), process.exitCode(), trace);
+            APR_WARNF("[PyHost] task '%s' exit=%d trace=%s", request.taskId.c_str(), process.exitCode(), trace);
             return result;
         }
 
@@ -335,7 +335,7 @@ namespace PyHost
         {
             result.error = TaskError::ProtocolError;
             result.message = "Invalid JSON response from Python worker";
-            SY_WARNF("[PyHost] task '%s' invalid response trace=%s", request.taskId.c_str(), trace);
+            APR_WARNF("[PyHost] task '%s' invalid response trace=%s", request.taskId.c_str(), trace);
             return result;
         }
 
@@ -365,7 +365,7 @@ namespace PyHost
             result.error = TaskError::ScriptFailed;
         }
 
-        SY_INFOF("[PyHost] task '%s' finished ok=%d trace=%s handle=%llu",
+        APR_INFOF("[PyHost] task '%s' finished ok=%d trace=%s handle=%llu",
             request.taskId.c_str(),
             result.ok ? 1 : 0,
             trace,

@@ -30,8 +30,8 @@ def harvest(path: Path) -> dict[str, str]:
 
 
 def main():
-    for ts in sorted(TRANS_DIR.glob("SanYiCAD_*.ts")):
-        lang = ts.stem.replace("SanYiCAD_", "")
+    for ts in sorted(TRANS_DIR.glob("April_*.ts")):
+        lang = ts.stem.replace("April_", "")
         data = harvest(ts)
         out = OUT_DIR / f"{lang}.json"
         out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")

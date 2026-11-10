@@ -3,8 +3,8 @@
 #include "PythonHost/MainThreadDispatch.h"
 #include "PythonHost/TaskExecutor.h"
 #include "PythonHost/TaskRegistry.h"
-#include "Log/SyLogger.h"
-#include "Log/SyTraceContext.h"
+#include "Log/AprLogger.h"
+#include "Log/AprTraceContext.h"
 
 namespace PyHost
 {
@@ -35,18 +35,18 @@ namespace PyHost
 
         if (!g_runtime.initialize(config))
         {
-            SY_ERROR("[PyHost] RuntimeManager initialization failed");
+            APR_ERROR("[PyHost] RuntimeManager initialization failed");
             return false;
         }
 
         const std::string tasksPath = g_runtime.resolveTasksConfigPath();
         if (!g_registry.load(tasksPath))
         {
-            SY_WARN("[PyHost] Task registry loaded zero tasks; check Python/tasks.json deployment");
+            APR_WARN("[PyHost] Task registry loaded zero tasks; check Python/tasks.json deployment");
         }
 
         m_initialized = true;
-        SY_INFO("[PyHost] PythonHost initialized");
+        APR_INFO("[PyHost] PythonHost initialized");
         return true;
     }
 
@@ -60,7 +60,7 @@ namespace PyHost
         g_runtime.shutdown();
         g_registry.clear();
         m_initialized = false;
-        SY_INFO("[PyHost] PythonHost shutdown");
+        APR_INFO("[PyHost] PythonHost shutdown");
     }
 
     bool PythonHost::isInitialized() const
@@ -71,7 +71,7 @@ namespace PyHost
     TaskHandle PythonHost::runTask(const TaskRequest& request, TaskCallback callback)
     {
         TaskRequest traced = request;
-        traced.traceId = SyTrace::resolveTraceIdString(request.traceId.c_str());
+        traced.traceId = AprTrace::resolveTraceIdString(request.traceId.c_str());
 
         if (!m_initialized)
         {
@@ -81,7 +81,7 @@ namespace PyHost
             result.ok = false;
             result.error = TaskError::NotInitialized;
             result.message = "PythonHost is not initialized";
-            SY_WARNF("[PyHost] task '%s' rejected (not initialized) trace=%s",
+            APR_WARNF("[PyHost] task '%s' rejected (not initialized) trace=%s",
                 traced.taskId.c_str(),
                 traced.traceId.empty() ? "-" : traced.traceId.c_str());
             deliverCallback(callback, result);
@@ -97,14 +97,14 @@ namespace PyHost
             result.ok = false;
             result.error = TaskError::UnknownTask;
             result.message = "Unknown task id: " + traced.taskId;
-            SY_WARNF("[PyHost] unknown task '%s' trace=%s",
+            APR_WARNF("[PyHost] unknown task '%s' trace=%s",
                 traced.taskId.c_str(),
                 traced.traceId.empty() ? "-" : traced.traceId.c_str());
             deliverCallback(callback, result);
             return 0;
         }
 
-        SY_INFOF("[PyHost] dispatch task='%s' trace=%s timeout=%dms",
+        APR_INFOF("[PyHost] dispatch task='%s' trace=%s timeout=%dms",
             traced.taskId.c_str(),
             traced.traceId.empty() ? "-" : traced.traceId.c_str(),
             traced.timeoutMs);

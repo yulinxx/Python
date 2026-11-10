@@ -1,7 +1,7 @@
 [project]
-name = "sanyi"
+name = "apr"
 version = "0.1.0"
-description = "SanYi CAD Python integration package"
+description = "April CAD Python integration package"
 requires-python = ">=3.11"
 
 [tool.setuptools.packages.find]

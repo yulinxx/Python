@@ -1,17 +1,17 @@
-add_executable(SyPythonHostExample
+add_executable(AprPythonHostExample
     main.cpp
 )
 
-target_compile_features(SyPythonHostExample PRIVATE cxx_std_17)
+target_compile_features(AprPythonHostExample PRIVATE cxx_std_17)
 
-target_link_libraries(SyPythonHostExample PRIVATE
+target_link_libraries(AprPythonHostExample PRIVATE
     PythonHost
 )
 
 if(MSVC)
-    target_compile_options(SyPythonHostExample PRIVATE /utf-8)
+    target_compile_options(AprPythonHostExample PRIVATE /utf-8)
 endif()
 
-set_target_properties(SyPythonHostExample PROPERTIES FOLDER "Examples")
+set_target_properties(AprPythonHostExample PROPERTIES FOLDER "Examples")
 
-message(STATUS "  Example: SyPythonHostExample")
+message(STATUS "  Example: AprPythonHostExample")

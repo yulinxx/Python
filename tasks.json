@@ -2,12 +2,12 @@
   "protocol": 1,
   "tasks": {
     "echo": {
-      "entry": "sanyi.tasks.echo:run",
+      "entry": "apr.tasks.echo:run",
       "mode": "subprocess",
       "timeout_ms": 5000
     },
     "face.detect": {
-      "entry": "sanyi.tasks.face:detect",
+      "entry": "apr.tasks.face:detect",
       "mode": "subprocess",
       "timeout_ms": 30000
     }

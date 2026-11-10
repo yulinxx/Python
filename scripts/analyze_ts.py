@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""Analyze and update SanYiCAD_zh.ts unfinished translations."""
+"""Analyze and update April_zh.ts unfinished translations."""
 import re
 import sys
 from pathlib import Path
 
-TS_PATH = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "SanYiCAD_zh.ts"
+TS_PATH = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "April_zh.ts"
 
 
 def parse_messages(text: str):

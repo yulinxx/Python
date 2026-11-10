@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Export all English source strings from SanYiCAD_en.ts."""
+"""Export all English source strings from April_en.ts."""
 import re
 from pathlib import Path
 
-TS = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "SanYiCAD_en.ts"
+TS = Path(__file__).resolve().parents[2] / "UI" / "Common" / "Translations" / "April_en.ts"
 
 text = TS.read_text(encoding="utf-8")
 sources = []

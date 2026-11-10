@@ -24,8 +24,8 @@ def missing_sources(path: Path):
 def main():
     OUT.mkdir(exist_ok=True)
     all_missing = None
-    for ts in sorted(TRANS_DIR.glob("SanYiCAD_*.ts")):
-        lang = ts.stem.replace("SanYiCAD_", "")
+    for ts in sorted(TRANS_DIR.glob("April_*.ts")):
+        lang = ts.stem.replace("April_", "")
         miss = missing_sources(ts)
         (OUT / f"{lang}.json").write_text(json.dumps(miss, ensure_ascii=False, indent=2), encoding="utf-8")
         s = set(miss)

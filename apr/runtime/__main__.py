@@ -8,7 +8,7 @@ import sys
 import traceback
 from typing import Any
 
-from sanyi.tasks.registry import resolve_entry
+from apr.tasks.registry import resolve_entry
 
 
 def _configure_import_path(root: str) -> None:
@@ -41,7 +41,7 @@ def _run_payload(payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    parser = argparse.ArgumentParser(prog="python -m sanyi.runtime")
+    parser = argparse.ArgumentParser(prog="python -m apr.runtime")
     parser.add_argument("--root", default="", help="Python package root directory")
     args = parser.parse_args(argv)
 

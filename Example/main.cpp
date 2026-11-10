@@ -5,7 +5,7 @@
 
 // ============================================================
 //  PythonHost 使用示例
-//  编译后执行 SyPythonHostExample.exe
+//  编译后执行 AprPythonHostExample.exe
 //
 //  演示 PythonHost 框架的基本流程：
 //    initialize(Config) -> info() -> shutdown()
@@ -17,7 +17,7 @@
 
 int main()
 {
-    std::printf("=== SyPythonHostExample ===\n");
+    std::printf("=== AprPythonHostExample ===\n");
 
     PyHost::Config config;
     config.pythonRoot = std::filesystem::current_path().string();

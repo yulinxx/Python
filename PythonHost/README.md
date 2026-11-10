@@ -4,7 +4,7 @@
 
 Python宿主库，提供Python脚本嵌入执行、任务注册与执行、算法调度等功能，实现Python与C++的桥接。
 
-本模块是 SanYi CAD 项目中 Python 集成框架的核心组件，负责在 C++ 应用中以统一的方式加载、调度和执行 Python 算法任务，支持子进程（Subprocess）与桥接（Bridge）两种运行模式。
+本模块是 April CAD 项目中 Python 集成框架的核心组件，负责在 C++ 应用中以统一的方式加载、调度和执行 Python 算法任务，支持子进程（Subprocess）与桥接（Bridge）两种运行模式。
 
 ## 目录结构
 
@@ -99,12 +99,12 @@ PyHost::PythonHost::instance().shutdown();
 ```json
 {
     "echo": {
-        "entry": "sanyi.tasks.echo",
+        "entry": "apr.tasks.echo",
         "mode": "subprocess",
         "timeoutMs": 10000
     },
     "face.detect": {
-        "entry": "sanyi.tasks.face_detect",
+        "entry": "apr.tasks.face_detect",
         "mode": "subprocess",
         "timeoutMs": 60000
     }
@@ -255,13 +255,13 @@ namespace PyHost { }
 |----|------|
 | **Python 3.11** | 嵌入/子进程执行的 Python 运行时环境 |
 | **Qt Core** | 跨平台基础库，用于事件循环与主线程调度 |
-| **Log** | SanYi 日志库，用于运行日志输出 |
+| **Log** | April 日志库，用于运行日志输出 |
 
 ### 可选依赖
 
 | 库 | 说明 |
 |----|------|
-| **SanYi PyBindCore** | Phase 2 桥接层，提供 Python 侧 `sanyi` 包的 Facade API（`SANYI_PYBIND_CORE` 选项） |
+| **April PyBindCore** | Phase 2 桥接层，提供 Python 侧 `apr` 包的 Facade API（`APR_PYBIND_CORE` 选项） |
 
 ### 依赖库安装方法
 
@@ -281,7 +281,7 @@ python --version
 
 由项目顶层 CMake 统一管理，需在 CMake 配置中指定 Qt 安装路径（`CMAKE_PREFIX_PATH`）。
 
-#### SanYi Log 库
+#### April Log 库
 
 作为项目内模块，构建时自动链接，无需单独安装。
 
@@ -291,17 +291,17 @@ python --version
 
 | 选项 | 默认值 | 说明 |
 |------|--------|------|
-| `SANYI_PYTHON_HOST` | `ON` | 是否构建 PythonHost 模块 |
-| `SANYI_PYBIND_CORE` | `ON` | 是否构建 PyBindCore 桥接扩展 |
-| `SANYI_PYTHON_EMBED` | `OFF` | 预留给进程内桥接模式（Phase 3） |
+| `APR_PYTHON_HOST` | `ON` | 是否构建 PythonHost 模块 |
+| `APR_PYBIND_CORE` | `ON` | 是否构建 PyBindCore 桥接扩展 |
+| `APR_PYTHON_EMBED` | `OFF` | 预留给进程内桥接模式（Phase 3） |
 
 ### CMake 构建示例
 
 ```bash
 # 配置
 cmake -S . -B build ^
-    -DSANYI_PYTHON_HOST=ON ^
-    -DSANYI_PYBIND_CORE=ON ^
+    -DAPR_PYTHON_HOST=ON ^
+    -DAPR_PYBIND_CORE=ON ^
     -DCMAKE_PREFIX_PATH="C:/Qt/6.x/msvc2019_64"
 
 # 构建
@@ -311,7 +311,7 @@ cmake --build build --config Release
 ### 构建产物
 
 - **Windows**：`PythonHost.dll`（Release）/ `PythonHost_d.dll`（Debug）
-- 输出目录遵循 SanYi 项目统一的 `lib/<platform>/<config>/` 规范
+- 输出目录遵循 April 项目统一的 `lib/<platform>/<config>/` 规范
 
 ### 编译特性
 
@@ -326,7 +326,7 @@ cmake --build build --config Release
 C++ 宿主通过以下方式启动 Python 工作进程：
 
 ```
-python -m sanyi.runtime --root <PythonRoot>
+python -m apr.runtime --root <PythonRoot>
 ```
 
 **stdin 输入**（C++ → Python）：

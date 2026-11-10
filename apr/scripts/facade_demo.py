@@ -2,16 +2,16 @@
 
 from __future__ import annotations
 
-import sanyi
+import apr
 
 
 def main() -> None:
-    if sanyi.Document is None:
-        raise RuntimeError("PyBindCore extension (_sanyi_core) is not available")
+    if apr.Document is None:
+        raise RuntimeError("PyBindCore extension (_apr_core) is not available")
 
-    doc = sanyi.Document.create()
-    doc.add_line(sanyi.Vec2(0, 0), sanyi.Vec2(100, 50))
-    doc.add_circle(sanyi.Vec2(50, 25), 10)
+    doc = apr.Document.create()
+    doc.add_line(apr.Vec2(0, 0), apr.Vec2(100, 50))
+    doc.add_circle(apr.Vec2(50, 25), 10)
 
     snap = doc.export_snapshot()
     print(f"entities={snap.entity_count}, bounds={snap.bounds}")

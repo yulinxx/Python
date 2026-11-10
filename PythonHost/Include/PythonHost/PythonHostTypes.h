@@ -41,7 +41,7 @@ namespace PyHost
     {
         std::string taskId;
         JsonString inputJson = "{}";
-        /** 可选；为空时继承 SyTrace::currentTraceIdString() */
+        /** 可选；为空时继承 AprTrace::currentTraceIdString() */
         std::string traceId;
         int timeoutMs = 60000;
         bool cancellable = true;

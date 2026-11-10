@@ -1,12 +1,12 @@
 # PythonHost
 
-SanYi CAD Python integration framework (Phase 0/1).
+April CAD Python integration framework (Phase 0/1).
 
 ## Layout
 
 - `PythonHost/Include/PythonHost/` — public C++ API
 - `PythonHost/Src/` — runtime, task registry, subprocess executor
-- `../Python/` — deployable `sanyi` Python package and `tasks.json`
+- `../Python/` — deployable `apr` Python package and `tasks.json`
 
 ## C++ usage
 
@@ -31,14 +31,14 @@ PyHost::PythonHost::instance().runTask(req, [](const PyHost::TaskResult& result)
 C++ launches:
 
 ```text
-python -m sanyi.runtime --root <PythonRoot>
+python -m apr.runtime --root <PythonRoot>
 ```
 
 and writes one JSON object to stdin. The worker returns one JSON object on stdout.
 
 ## Tasks
 
-Register tasks in `Python/tasks.json`. Implement handlers under `Python/sanyi/tasks/`.
+Register tasks in `Python/tasks.json`. Implement handlers under `Python/apr/tasks/`.
 
 Built-in scaffold tasks:
 
@@ -47,17 +47,17 @@ Built-in scaffold tasks:
 
 ## PyBindCore facade (Phase 2)
 
-When `_sanyi_core.pyd` is built (`SANYI_PYBIND_CORE=ON`), import via:
+When `_apr_core.pyd` is built (`APR_PYBIND_CORE=ON`), import via:
 
 ```python
-import sanyi
-doc = sanyi.Document.create()
+import apr
+doc = apr.Document.create()
 ```
 
 See `PyBindCore/README.md` for facade API details.
 
 ## CMake options
 
-- `SANYI_PYTHON_HOST` — build and link PythonHost (default ON)
-- `SANYI_PYBIND_CORE` — build PyBindCore facade extension (default ON)
-- `SANYI_PYTHON_EMBED` — reserved for in-process bridge (Phase 3)
+- `APR_PYTHON_HOST` — build and link PythonHost (default ON)
+- `APR_PYBIND_CORE` — build PyBindCore facade extension (default ON)
+- `APR_PYTHON_EMBED` — reserved for in-process bridge (Phase 3)

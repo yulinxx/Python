@@ -19,7 +19,7 @@ namespace PyHost
         Config config;
         config.pythonRoot = joinPath(applicationDir, "Python");
         config.venvPath = joinPath(config.pythonRoot, "venv");
-        config.extensionPath = joinPath(config.pythonRoot, "sanyi");
+        config.extensionPath = joinPath(config.pythonRoot, "apr");
         config.tasksConfigPath = joinPath(config.pythonRoot, "tasks.json");
         config.sourcePythonRoot = sourceRoot.empty() ? std::string() : joinPath(sourceRoot, "Python");
         config.enableEmbedded = false;

@@ -10,7 +10,7 @@ cmake_minimum_required(VERSION 4.3)
 #
 #   1) 复用仓库统一配置，不自己手搓一套，避免与主工程漂移：
 #        ../Config.cmake               —— vcpkg / Qt 路径、MSVC 运行库、模块开关
-#        ../CMake/StandaloneInit.cmake —— SANYI_ROOT、编译选项、GTest 查找、兄弟模块拉入
+#        ../CMake/StandaloneInit.cmake —— APR_ROOT、编译选项、GTest 查找、兄弟模块拉入
 #      与 Log / Network / Hardware / Utility 的独立入口保持同一套写法。
 #
 #   2) 可脱离主程序单独编译：依赖的兄弟 DLL（Log，内层 PRIVATE 链接）由本工程
@@ -30,14 +30,14 @@ cmake_minimum_required(VERSION 4.3)
 include(${CMAKE_CURRENT_LIST_DIR}/../Config.cmake)
 include(${CMAKE_CURRENT_LIST_DIR}/../CMake/StandaloneInit.cmake)
 
-project(SanYiPythonHost
+project(AprPythonHost
     VERSION 1.0.0
-    DESCRIPTION "SanYi CAD Python Host Integration Framework"
+    DESCRIPTION "April CAD Python Host Integration Framework"
     LANGUAGES CXX
 )
 
 # MSVC 的 /W4 等选项必须在 project() 之后才能正确判定编译器
-sanyi_setup_compiler_options()
+apr_setup_compiler_options()
 
 # 示例目标仅存在于独立构建（内层不负责 Example）
 option(BUILD_PYTHONHOST_EXAMPLE "Build PythonHost usage example" ON)
@@ -45,11 +45,11 @@ option(BUILD_PYTHONHOST_EXAMPLE "Build PythonHost usage example" ON)
 # --- 测试与兄弟模块 ---------------------------------------------------------
 # 先声明本构建树的测试模块范围、再探测 GTest（缺失时把唯一总开关降级为 OFF），
 # 两步都必须发生在拉入兄弟模块之前。
-sanyi_only_own_tests(PYTHONHOST)
-sanyi_finalize_tests()
+apr_only_own_tests(PYTHONHOST)
+apr_finalize_tests()
 
 # PythonHost 只依赖 Log（内层 PRIVATE 链接诊断输出）。
-sanyi_add_sibling(Log "${SANYI_LOG_DIR}")
+apr_add_sibling(Log "${APR_LOG_DIR}")
 
 # 内层：创建 PythonHost DLL、挂载测试（BUILD_TESTS 时）、输出状态
 add_subdirectory(PythonHost)

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Analyze unfinished entries in all SanYiCAD_*.ts files."""
+"""Analyze unfinished entries in all April_*.ts files."""
 import re
 from pathlib import Path
 
@@ -29,7 +29,7 @@ def analyze(path: Path):
 
 
 def main():
-    for ts in sorted(TRANS_DIR.glob("SanYiCAD_*.ts")):
+    for ts in sorted(TRANS_DIR.glob("April_*.ts")):
         total, done, unfinished, empty = analyze(ts)
         print(f"{ts.name:20s} total={total:4d} done={done:4d} unfinished={unfinished:4d} need_fill={empty:4d}")
 

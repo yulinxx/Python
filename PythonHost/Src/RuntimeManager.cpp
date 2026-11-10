@@ -1,6 +1,6 @@
 #include "PythonHost/RuntimeManager.h"
 
-#include "Log/SyLogger.h"
+#include "Log/AprLogger.h"
 
 #include <QProcess>
 #include <QFileInfo>
@@ -41,11 +41,11 @@ namespace PyHost
         if (fs::exists(bundledPython) && probePythonExecutable(bundledPython))
         {
             m_initialized = true;
-            SY_INFOF("[PyHost] Using bundled venv Python: %s", m_pythonExecutable.c_str());
+            APR_INFOF("[PyHost] Using bundled venv Python: %s", m_pythonExecutable.c_str());
             return true;
         }
 
-        const std::string customHome = envOrEmpty("SANYI_PYTHON_HOME");
+        const std::string customHome = envOrEmpty("APR_PYTHON_HOME");
         if (!customHome.empty())
         {
 #ifdef _WIN32
@@ -56,7 +56,7 @@ namespace PyHost
             if (probePythonExecutable(candidate))
             {
                 m_initialized = true;
-                SY_INFOF("[PyHost] Using SANYI_PYTHON_HOME Python: %s", m_pythonExecutable.c_str());
+                APR_INFOF("[PyHost] Using APR_PYTHON_HOME Python: %s", m_pythonExecutable.c_str());
                 return true;
             }
         }
@@ -73,19 +73,19 @@ namespace PyHost
             if (probePythonExecutable(candidate.toStdString()))
             {
                 m_initialized = true;
-                SY_WARNF("[PyHost] Falling back to system Python: %s", m_pythonExecutable.c_str());
+                APR_WARNF("[PyHost] Falling back to system Python: %s", m_pythonExecutable.c_str());
                 return true;
             }
         }
 
-        SY_ERROR("[PyHost] Python executable not found");
+        APR_ERROR("[PyHost] Python executable not found");
         m_initialized = false;
         return false;
     }
 
 void RuntimeManager::shutdown()
 {
-    SY_INFO("[PyHost] RuntimeManager: shutting down");
+    APR_INFO("[PyHost] RuntimeManager: shutting down");
     m_initialized = false;
     m_pythonExecutable.clear();
     m_pythonVersion.clear();

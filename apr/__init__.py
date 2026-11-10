@@ -1,4 +1,4 @@
-"""SanYi CAD Python integration package."""
+"""April CAD Python integration package."""
 
 from __future__ import annotations
 
@@ -7,7 +7,7 @@ __version__ = "0.1.0"
 _core_import_error = None
 
 try:
-    from . import _sanyi_core as core
+    from . import _apr_core as core
 except ImportError as exc:  # pragma: no cover - extension not built or ABI mismatch
     core = None
     _core_import_error = exc
@@ -41,5 +41,5 @@ else:
 
 
 def core_import_error() -> str | None:
-    """Return the import error message when _sanyi_core is unavailable."""
+    """Return the import error message when _apr_core is unavailable."""
     return str(_core_import_error) if _core_import_error is not None else None
