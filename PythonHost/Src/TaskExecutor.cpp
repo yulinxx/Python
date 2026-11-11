@@ -25,10 +25,9 @@ namespace PyHost
             return oss.str();
         }
 
-        bool isCancelled(const std::unordered_map<TaskHandle, std::atomic<bool>>& flags, TaskHandle handle)
+        bool isCancelled(const std::shared_ptr<std::atomic<bool>>& flag)
         {
-            const auto it = flags.find(handle);
-            return it != flags.end() && it->second.load();
+            return flag && flag->load();
         }
 
         std::string resolvedTraceId(const TaskRequest& request)
@@ -49,94 +48,101 @@ namespace PyHost
 
     void TaskExecutor::shutdownAll()
     {
-        // 三步清理：置 cancel flag → kill 所有 QProcess → join 所有线程
-        // 顺序不能反：先 kill 让阻塞在 waitForFinished 的 worker 立即返回，join 才能及时收干净
-        std::vector<QProcess*> processesToKill;
-        std::vector<TaskHandle> handlesToJoin;
+        // 三步清理：置 cancel flag → kill 所有 QProcess → 等待 worker 退出
+        // 顺序不能反：先 kill 让阻塞在 waitForFinished 的 worker 立即返回，
+        // 之后按计数等待才能在可见时间内收敛
+        size_t killedCount = 0;
+        size_t pendingWorkers = 0;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
+            m_shuttingDown = true;
             // 置所有取消标志
             for (auto& [h, flag] : m_cancelFlags)
             {
-                flag.store(true);
+                if (flag)
+                {
+                    flag->store(true);
+                }
             }
-            // 收集 QProcess 裸指针（worker 内部持有 unique_ptr，我们只 kill 不 delete）
+            // kill 必须在锁内：worker 只有在 ProcessGuard 析构时拿到同一把锁才会擦除登记，
+            // 因此这里 kill 的 QProcess 对象在 kill 期间保证仍然存活
             for (auto& [h, proc] : m_processes)
             {
-                processesToKill.push_back(proc);
-            }
-            // 收集活跃线程的 handle
-            for (auto& [h, t] : m_threads)
-            {
-                handlesToJoin.push_back(h);
-            }
-        }
-
-        // kill 所有子进程——让阻塞在 waitForFinished 的 worker 立即返回
-        for (QProcess* proc : processesToKill)
-        {
-            if (proc)
-            {
-                proc->kill();
-            }
-        }
-        APR_INFOF("[PyHost] shutdownAll: %zu process(es) killed, joining %zu worker(s)",
-            processesToKill.size(), handlesToJoin.size());
-
-        // 每个线程给 3 秒超时：kill 子进程后 waitForFinished 应该立即返回；
-        // 超时只打 WARN 不放弃 join——joinable 的 std::thread 析构会触发 std::terminate
-        const auto perThreadTimeout = std::chrono::seconds(3);
-        for (TaskHandle handle : handlesToJoin)
-        {
-            std::thread worker;
-            {
-                std::lock_guard<std::mutex> lock(m_mutex);
-                auto it = m_threads.find(handle);
-                if (it != m_threads.end() && it->second.joinable())
+                if (proc)
                 {
-                    worker = std::move(it->second);
-                    m_threads.erase(it);
+                    proc->kill();
+                    ++killedCount;
                 }
             }
-            if (worker.joinable())
+            pendingWorkers = m_activeWorkers;
+        }
+        APR_INFOF("[PyHost] shutdownAll: %zu process(es) killed, waiting for %zu worker(s)",
+            killedCount, pendingWorkers);
+
+        // worker 在线程函数末尾递减计数并 notify；计数归零前本对象与 m_runtime 都不得析构。
+        // 这里等待而不是 join：线程已 detach，不存在可 join 的线程对象
+        std::unique_lock<std::mutex> lock(m_mutex);
+        while (m_activeWorkers > 0)
+        {
+            if (m_workerExitCv.wait_for(lock, std::chrono::seconds(3)) == std::cv_status::timeout)
             {
-                // 先 sleep 等待 kill 生效
-                std::this_thread::sleep_for(perThreadTimeout);
-                if (worker.joinable())
-                {
-                    worker.join();
-                }
+                APR_WARNF("[PyHost] shutdownAll: %zu worker(s) still running, keep waiting", m_activeWorkers);
             }
         }
 
         // 最终清理残留的 map 条目
-        {
-            std::lock_guard<std::mutex> lock(m_mutex);
-            m_threads.clear();
-            m_processes.clear();
-            m_cancelFlags.clear();
-            m_runningFlags.clear();
-        }
-        APR_INFO("[PyHost] shutdownAll: all workers joined and state cleared");
+        m_cancelFlags.clear();
+        m_runningFlags.clear();
+        m_processes.clear();
+        lock.unlock();
+        APR_INFO("[PyHost] shutdownAll: all workers exited and state cleared");
     }
 
     TaskHandle TaskExecutor::run(const TaskRequest& request, const TaskDefinition& definition, TaskCallback callback)
     {
-        const TaskHandle handle = m_nextHandle.fetch_add(1);
+        // 取消标志逐任务新建，worker 拿到的是独享副本，读取时不访问任何共享容器
+        auto cancelFlag = std::make_shared<std::atomic<bool>>(false);
+        TaskHandle handle = 0;
         {
             std::lock_guard<std::mutex> lock(m_mutex);
-            m_cancelFlags.emplace(handle, false);
-            m_runningFlags.emplace(handle, true);
+            if (m_shuttingDown)
+            {
+                // 关停后不得再起线程：worker 已 detach，晚于析构创建会访问已销毁的 this
+                APR_WARNF("[PyHost] task '%s' rejected (executor is shutting down)", request.taskId.c_str());
+            }
+            else
+            {
+                handle = m_nextHandle.fetch_add(1);
+                m_cancelFlags.emplace(handle, cancelFlag);
+                m_runningFlags.emplace(handle, true);
+                ++m_activeWorkers;
+            }
         }
 
-        // worker 完成后自行清理 map 条目
-        auto worker = std::thread([this, request, definition, callback, handle]() {
+        if (handle == 0)
+        {
+            TaskResult rejected;
+            rejected.taskId = request.taskId;
+            rejected.traceId = resolvedTraceId(request);
+            rejected.ok = false;
+            rejected.error = TaskError::Cancelled;
+            rejected.message = "Task executor is shutting down";
+            if (callback)
+            {
+                callback(rejected);
+            }
+            return 0;
+        }
+
+        // 工作线程 detach 后不再被任何容器持有，因此不存在“工作线程运行中析构自己的 std::thread”这条路径；
+        // 生命周期由 shutdownAll() 按 m_activeWorkers 计数统一等待
+        std::thread([this, request, definition, callback, handle, cancelFlag]() {
             TaskResult result;
             result.handle = handle;
             result.taskId = request.taskId;
             result.traceId = resolvedTraceId(request);
 
-            if (isCancelled(m_cancelFlags, handle))
+            if (isCancelled(cancelFlag))
             {
                 result.ok = false;
                 result.error = TaskError::Cancelled;
@@ -150,28 +156,33 @@ namespace PyHost
             }
             else
             {
-                result = executeSubprocess(request, definition, handle);
+                result = executeSubprocess(request, definition, handle, cancelFlag);
+            }
+
+            bool deliver = false;
+            {
+                std::lock_guard<std::mutex> lock(m_mutex);
+                // 关停中丢弃回调：宿主对象可能已经在析构，不能再被回调触达
+                deliver = !m_shuttingDown;
+            }
+
+            // 回调先于计数递减执行：shutdownAll() 等待计数归零，回调在栈上必然已经返回
+            if (callback && deliver)
+            {
+                callback(result);
             }
 
             {
                 std::lock_guard<std::mutex> lock(m_mutex);
-                m_runningFlags[handle].store(false);
-                m_cancelFlags.erase(handle);
                 m_runningFlags.erase(handle);
-                m_threads.erase(handle);
+                m_cancelFlags.erase(handle);
+                if (m_activeWorkers > 0)
+                {
+                    --m_activeWorkers;
+                }
             }
-
-            if (callback)
-            {
-                callback(result);
-            }
-        });
-
-        // 必须在锁外 move thread（避免析构 shutdownAll 与 run 并发访问 m_threads）
-        {
-            std::lock_guard<std::mutex> lock(m_mutex);
-            m_threads[handle] = std::move(worker);
-        }
+            m_workerExitCv.notify_all();
+        }).detach();
 
         return handle;
     }
@@ -180,11 +191,11 @@ namespace PyHost
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         const auto it = m_cancelFlags.find(handle);
-        if (it == m_cancelFlags.end())
+        if (it == m_cancelFlags.end() || !it->second)
         {
             return false;
         }
-        it->second.store(true);
+        it->second->store(true);
         return true;
     }
 
@@ -192,11 +203,11 @@ namespace PyHost
     {
         std::lock_guard<std::mutex> lock(m_mutex);
         const auto it = m_runningFlags.find(handle);
-        return it != m_runningFlags.end() && it->second.load();
+        return it != m_runningFlags.end() && it->second;
     }
 
-    TaskResult TaskExecutor::executeSubprocess(
-        const TaskRequest& request, const TaskDefinition& definition, TaskHandle handle)
+    TaskResult TaskExecutor::executeSubprocess(const TaskRequest& request, const TaskDefinition& definition,
+        TaskHandle handle, const std::shared_ptr<std::atomic<bool>>& cancelFlag)
     {
         TaskResult result;
         result.handle = handle;
@@ -213,7 +224,7 @@ namespace PyHost
             return result;
         }
 
-        if (isCancelled(m_cancelFlags, handle))
+        if (isCancelled(cancelFlag))
         {
             result.error = TaskError::Cancelled;
             result.message = "Task cancelled";
@@ -305,7 +316,7 @@ namespace PyHost
             return result;
         }
 
-        if (isCancelled(m_cancelFlags, handle))
+        if (isCancelled(cancelFlag))
         {
             result.error = TaskError::Cancelled;
             result.message = "Task cancelled";
